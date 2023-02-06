@@ -11,12 +11,14 @@ interface TableProps<T extends object> {
   data: T[]
   columns: ColumnDef<T>[]
   showFooter?: boolean
+  stripedRows?: boolean
 }
 
 export const Table = <T extends object>({
   data,
   columns,
   showFooter = false,
+  stripedRows = false,
 }: TableProps<T>) => {
   const table = useReactTable({
     data,
@@ -25,9 +27,9 @@ export const Table = <T extends object>({
   })
 
   return (
-    <div className="relative overflow-x-auto shadow-md sm:rounded-md">
-      <table className="w-full text-sm text-left text-gray-500 dark:text-gray-400">
-        <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+    <div className="overflow-x-auto border border-slate-300 dark:border-slate-700 sm:rounded-md">
+      <table className="w-full text-left text-sm text-gray-500 dark:text-gray-400">
+        <thead className="font bg-white text-xs font-medium uppercase text-gray-700 dark:bg-slate-800 dark:text-gray-400">
           {table.getHeaderGroups().map((headerGroup) => (
             <tr key={headerGroup.id}>
               {headerGroup.headers.map((header) => (
@@ -47,10 +49,11 @@ export const Table = <T extends object>({
             <tr
               key={row.id}
               className={cn(
-                "hover:bg-gray-100 dark:hover:bg-gray-600 ",
-                i % 2 == 0
-                  ? "bg-white dark:bg-gray-900"
-                  : "bg-gray-50 dark:bg-gray-800"
+                "border-t border-slate-300 hover:bg-slate-100 dark:border-slate-700 dark:hover:bg-slate-700",
+                stripedRows &&
+                  (i % 2 == 0
+                    ? "bg-slate-50 dark:bg-slate-900"
+                    : "bg-white dark:bg-slate-800")
               )}
             >
               {row.getVisibleCells().map((cell) => (
@@ -62,11 +65,15 @@ export const Table = <T extends object>({
           ))}
         </tbody>
         {showFooter && (
-          <tfoot className="border-t bg-gray-50">
+          <tfoot className="border-t border-slate-300 bg-white text-xs font-medium uppercase text-gray-700 dark:border-slate-700 dark:bg-slate-800 dark:text-gray-400">
             {table.getFooterGroups().map((footerGroup) => (
               <tr key={footerGroup.id}>
                 {footerGroup.headers.map((header) => (
-                  <th key={header.id} colSpan={header.colSpan}>
+                  <th
+                    className="px-4 py-2"
+                    key={header.id}
+                    colSpan={header.colSpan}
+                  >
                     {!header.isPlaceholder &&
                       flexRender(
                         header.column.columnDef.footer,

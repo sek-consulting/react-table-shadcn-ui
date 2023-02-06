@@ -13,3 +13,4 @@ this little demo projects aims to provide a re-usable table component that fits 
 - [ ] add a way for specifiy column filtering above the table
 - [ ] add a way for row styling based on the content of a specific column
 - [ ] add a way to handle double click on a specific cell (pass row / column infos to class that uses table)
+- [ ] add a way to easily add flag to show column sums in the footer
