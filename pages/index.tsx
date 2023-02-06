@@ -1,6 +1,6 @@
 import Head from "next/head"
 import { Layout } from "@/components/layout"
-import { Table } from "@/components/ui/table"
+import { DblClickInfo, Table } from "@/components/ui/table"
 import { useMemo } from "react"
 import { ColumnDef } from "@tanstack/react-table"
 
@@ -46,13 +46,23 @@ export default function IndexPage() {
     return items
   }
 
+  // create a handler function that processes the clicked data
+  const handleDblClick = (data: DblClickInfo<Item>) => {
+    console.log(data)
+  }
+
   return (
     <Layout>
       <Head>
         <title>react-table</title>
       </Head>
       <div className="flex h-screen w-screen items-center justify-center">
-        <Table data={dummyData()} columns={cols} stripedRows />
+        <Table
+          data={dummyData()}
+          columns={cols}
+          stripedRows
+          handleDblClick={handleDblClick}
+        />
       </div>
     </Layout>
   )
