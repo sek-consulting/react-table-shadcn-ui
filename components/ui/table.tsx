@@ -15,6 +15,13 @@ import { RankingInfo, rankItem } from "@tanstack/match-sorter-utils"
 import { cn } from "@/lib/utils"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "./select"
 
 declare module "@tanstack/table-core" {
   interface FilterMeta {
@@ -179,14 +186,12 @@ export const Table = <T extends object>({
         <span className="flex items-center gap-1">
           <div>Page</div>
           <strong>
-            {table.getState().pagination.pageIndex + 1} of{" "}
-            {table.getPageCount()}
+            {table.getState().pagination.pageIndex + 1}/{table.getPageCount()}
           </strong>
         </span>
         <span className="flex items-center gap-1">
           | Go to page:
-          <input
-            type="number"
+          <Input
             defaultValue={table.getState().pagination.pageIndex + 1}
             onChange={(e) => {
               const page = e.target.value ? Number(e.target.value) - 1 : 0
@@ -195,18 +200,16 @@ export const Table = <T extends object>({
             className="w-16 rounded border p-1"
           />
         </span>
-        <select
-          value={table.getState().pagination.pageSize}
-          onChange={(e) => {
-            table.setPageSize(Number(e.target.value))
-          }}
-        >
-          {[10, 20, 30, 40, 50].map((pageSize) => (
-            <option key={pageSize} value={pageSize}>
-              Show {pageSize}
-            </option>
-          ))}
-        </select>
+        <Select defaultValue="10">
+          <SelectTrigger className="w-[120px]">
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            {[10, 20, 30, 40, 50].map((pageSize) => (
+              <SelectItem value={String(pageSize)}>Show {pageSize}</SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
       </div>
       <pre>{JSON.stringify(table.getState(), null, 2)}</pre>
     </div>
