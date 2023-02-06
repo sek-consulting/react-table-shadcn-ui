@@ -35,10 +35,10 @@ export default function IndexPage() {
 
   const dummyData = (): Item[] => {
     const items = []
-    for (let i = 0; i < 10; i++) {
+    for (let i = 0; i < 100; i++) {
       items.push({
         id: i,
-        name: `Item ${i}`,
+        name: `Super duper long item name ${i}`,
         price: 100,
         quantity: 1,
       })
@@ -56,11 +56,12 @@ export default function IndexPage() {
       <Head>
         <title>react-table</title>
       </Head>
-      <div className="flex h-screen w-screen items-center justify-center">
+      <div className="flex h-screen w-screen justify-center">
         <Table
           data={dummyData()}
           columns={cols}
           stripedRows
+          showGlobalFilter
           handleDblClick={handleDblClick}
         />
       </div>

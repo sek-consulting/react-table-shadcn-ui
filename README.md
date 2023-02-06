@@ -7,7 +7,7 @@ this little demo projects aims to provide a re-usable table component that fits 
 - [ ] create a simple reac-table with global search / column sorting / pagination
 - [ ] style the table like shadcn/ui
 - [x] ~make footer optional (default: hidden)~
-- [ ] make global search optional (default: hidden)
+- [x] ~make global search optional (default: hidden)~
 - [ ] make pagination optional (default: hidden)
 - [ ] add a way for column styling based on cell value
 - [ ] add a way to add specific column filtering above the table
