@@ -1,6 +1,8 @@
 import * as React from "react"
 
 import {
+  Column,
+  Table as ReactTable,
   FilterFn,
   flexRender,
   getCoreRowModel,
@@ -21,24 +23,20 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "./select"
-
-declare module "@tanstack/table-core" {
-  interface FilterMeta {
-    itemRank: RankingInfo
-  }
-}
+} from "@/components/ui/select"
 
 interface TableProps<T extends object> {
   data: T[]
   columns: ColumnDef<T>[]
   showFooter?: boolean
   showGlobalFilter?: boolean
+  showColumnFilters?: boolean
+  showPagination?: boolean
   stripedRows?: boolean
-  handleDblClick?: (data: DblClickInfo<T>) => void
+  handleDblClick?: (data: OnClickData<T>) => void
 }
 
-export interface DblClickInfo<T extends object> {
+export interface OnClickData<T extends object> {
   row: number
   cell: number
   data: T
@@ -49,8 +47,10 @@ export const Table = <T extends object>({
   columns,
   showFooter = false,
   showGlobalFilter = false,
+  showColumnFilters = false,
+  showPagination = false,
   stripedRows = false,
-  handleDblClick = (data) => {},
+  handleDblClick = () => {},
 }: TableProps<T>) => {
   const [globalFilter, setGlobalFilter] = React.useState("")
 
@@ -65,11 +65,16 @@ export const Table = <T extends object>({
     getCoreRowModel: getCoreRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
-
-    debugTable: true,
-    debugHeaders: true,
-    debugColumns: false,
   })
+
+  React.useEffect(() => {
+    if (!showPagination) {
+      // XXX TODO: check if there is a smoother solution
+      // XXX TODO: also change to setPageSize = rowCount
+      // XXX TODO: save rowCount to add Show All on pagination
+      table.setPageSize(1000)
+    }
+  }, [])
 
   return (
     <div>
@@ -95,6 +100,11 @@ export const Table = <T extends object>({
                         header.column.columnDef.header,
                         header.getContext()
                       )}
+                    {showColumnFilters && header.column.getCanFilter() && (
+                      <div className="pt-1 font-normal">
+                        <ColumnFilter column={header.column} table={table} />
+                      </div>
+                    )}
                   </th>
                 ))}
               </tr>
@@ -134,16 +144,16 @@ export const Table = <T extends object>({
             <tfoot className="border-t border-slate-300 bg-white text-xs font-medium uppercase dark:border-slate-700  dark:text-gray-400">
               {table.getFooterGroups().map((footerGroup) => (
                 <tr key={footerGroup.id}>
-                  {footerGroup.headers.map((header) => (
+                  {footerGroup.headers.map((footer) => (
                     <th
                       className="px-4 py-2"
-                      key={header.id}
-                      colSpan={header.colSpan}
+                      key={footer.id}
+                      colSpan={footer.colSpan}
                     >
-                      {!header.isPlaceholder &&
+                      {!footer.isPlaceholder &&
                         flexRender(
-                          header.column.columnDef.footer,
-                          header.getContext()
+                          footer.column.columnDef.footer,
+                          footer.getContext()
                         )}
                     </th>
                   ))}
@@ -153,71 +163,140 @@ export const Table = <T extends object>({
           )}
         </table>
       </div>
-
-      <div className="flex items-center gap-2 py-2">
-        <Button
-          size="sm"
-          onClick={() => table.setPageIndex(0)}
-          disabled={!table.getCanPreviousPage()}
-        >
-          {"<<"}
-        </Button>
-        <Button
-          size="sm"
-          onClick={() => table.previousPage()}
-          disabled={!table.getCanPreviousPage()}
-        >
-          {"<"}
-        </Button>
-        <Button
-          size="sm"
-          onClick={() => table.nextPage()}
-          disabled={!table.getCanNextPage()}
-        >
-          {">"}
-        </Button>
-        <Button
-          size="sm"
-          onClick={() => table.setPageIndex(table.getPageCount() - 1)}
-          disabled={!table.getCanNextPage()}
-        >
-          {">>"}
-        </Button>
-        <span className="flex items-center gap-1">
-          <div>Page</div>
-          <strong>
-            {table.getState().pagination.pageIndex + 1}/{table.getPageCount()}
-          </strong>
-        </span>
-        <span className="flex items-center gap-1">
-          | Go to page:
-          <Input
-            defaultValue={table.getState().pagination.pageIndex + 1}
-            onChange={(e) => {
-              const page = e.target.value ? Number(e.target.value) - 1 : 0
-              table.setPageIndex(page)
-            }}
-            className="w-16 rounded border p-1"
-          />
-        </span>
-        <Select defaultValue="10">
-          <SelectTrigger className="w-[120px]">
-            <SelectValue />
-          </SelectTrigger>
-          <SelectContent>
-            {[10, 20, 30, 40, 50].map((pageSize) => (
-              <SelectItem value={String(pageSize)}>Show {pageSize}</SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-      </div>
-      <pre>{JSON.stringify(table.getState(), null, 2)}</pre>
+      {showPagination && (
+        <div className="flex items-center justify-between gap-2 py-2 text-sm">
+          <div className="flex items-center gap-2">
+            <Button
+              size="sm"
+              onClick={() => table.setPageIndex(0)}
+              disabled={!table.getCanPreviousPage()}
+              className="h-8"
+            >
+              {"<<"}
+            </Button>
+            <Button
+              size="sm"
+              onClick={() => table.previousPage()}
+              disabled={!table.getCanPreviousPage()}
+              className="h-8"
+            >
+              {"<"}
+            </Button>
+            <Button
+              size="sm"
+              onClick={() => table.nextPage()}
+              disabled={!table.getCanNextPage()}
+              className="h-8"
+            >
+              {">"}
+            </Button>
+            <Button
+              size="sm"
+              onClick={() => table.setPageIndex(table.getPageCount() - 1)}
+              disabled={!table.getCanNextPage()}
+              className="h-8"
+            >
+              {">>"}
+            </Button>
+            <span className="flex items-center gap-1">
+              <div>Page</div>
+              <strong>
+                {table.getState().pagination.pageIndex + 1}/
+                {table.getPageCount()}
+              </strong>
+            </span>
+          </div>
+          <div className="flex items-center gap-2">
+            Go to page:
+            <Input
+              defaultValue={table.getState().pagination.pageIndex + 1}
+              onChange={(e) => {
+                const page = e.target.value ? Number(e.target.value) - 1 : 0
+                table.setPageIndex(page)
+              }}
+              className="h-8 w-16"
+            />
+            <Select
+              defaultValue="10"
+              onValueChange={(value) => table.setPageSize(Number(value))}
+            >
+              <SelectTrigger className="h-8 w-[120px]">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                {[10, 20, 30, 40, 50].map((pageSize) => (
+                  <SelectItem key={pageSize} value={String(pageSize)}>
+                    Show {pageSize}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+        </div>
+      )}
     </div>
   )
+}
+
+declare module "@tanstack/table-core" {
+  interface FilterMeta {
+    itemRank: RankingInfo
+  }
 }
 
 const fuzzyFilter: FilterFn<any> = (row, columnId, value, addMeta) => {
   const itemRank = rankItem(row.getValue(columnId), value)
   addMeta({ itemRank })
   return itemRank.passed
+}
+
+const ColumnFilter = ({
+  column,
+  table,
+}: {
+  column: Column<any, any>
+  table: ReactTable<any>
+}) => {
+  const firstValue = table
+    .getPreFilteredRowModel()
+    .flatRows[0]?.getValue(column.id)
+
+  const columnFilterValue = column.getFilterValue()
+
+  return typeof firstValue === "number" ? (
+    <div className="flex space-x-2">
+      <Input
+        type="number"
+        value={(columnFilterValue as [number, number])?.[0] ?? ""}
+        onChange={(e) =>
+          column.setFilterValue((old: [number, number]) => [
+            e.target.value,
+            old?.[1],
+          ])
+        }
+        placeholder={`Min`}
+        className="h-8 w-24"
+      />
+      <Input
+        type="number"
+        value={(columnFilterValue as [number, number])?.[1] ?? ""}
+        onChange={(e) =>
+          column.setFilterValue((old: [number, number]) => [
+            old?.[0],
+            e.target.value,
+          ])
+        }
+        placeholder={`Max`}
+        className="h-8 w-24"
+      />
+    </div>
+  ) : (
+    <Input
+      type="text"
+      value={(columnFilterValue ?? "") as string}
+      onChange={(e) => column.setFilterValue(e.target.value)}
+      placeholder={`Search...`}
+      className="h-8 w-36"
+    />
+  )
 }

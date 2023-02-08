@@ -1,6 +1,5 @@
 import Head from "next/head"
-import { Layout } from "@/components/layout"
-import { DblClickInfo, Table } from "@/components/ui/table"
+import { OnClickData, Table } from "@/components/ui/table"
 import { useMemo } from "react"
 import { ColumnDef } from "@tanstack/react-table"
 
@@ -28,6 +27,7 @@ export default function IndexPage() {
         cell: (row) => row.renderValue(),
         accessorKey: "quantity",
         footer: "total",
+        enableColumnFilter: false,
       },
     ],
     []
@@ -35,7 +35,7 @@ export default function IndexPage() {
 
   const dummyData = (): Item[] => {
     const items = []
-    for (let i = 0; i < 100; i++) {
+    for (let i = 0; i < 20; i++) {
       items.push({
         id: i,
         name: `Super duper long item name ${i}`,
@@ -47,24 +47,26 @@ export default function IndexPage() {
   }
 
   // create a handler function that processes the clicked data
-  const handleDblClick = (data: DblClickInfo<Item>) => {
+  const handleDblClick = (data: OnClickData<Item>) => {
     console.log(data)
   }
 
   return (
-    <Layout>
+    <div>
       <Head>
         <title>react-table</title>
       </Head>
-      <div className="flex h-screen w-screen justify-center">
+      <div className="flex h-screen w-screen items-center justify-center">
         <Table
           data={dummyData()}
           columns={cols}
           stripedRows
           showGlobalFilter
+          showColumnFilters
+          showPagination
           handleDblClick={handleDblClick}
         />
       </div>
-    </Layout>
+    </div>
   )
 }
