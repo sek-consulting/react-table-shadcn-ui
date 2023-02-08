@@ -2,15 +2,15 @@
 
 this little demo projects aims to provide a re-usable table component that fits the style of [shadcn/ui](https://github.com/shadcn/ui)
 
+![Darkmode Table](public/table_darkmode.jpg)
+
+## Contribution
+
+I would love to get some c&c on everything like coding style, structure and everything :) Also feel free to create pull requests if you would change something about the table.
+
 ## Roadmap
 
-- [ ] create a simple reac-table with global search / column sorting / pagination
-- [ ] add a way for column styling based on cell value
-- [ ] add a way for row styling based on the content of a specific column
-- [ ] add a way to easily add flag to show column sums in the footer
-- [x] ~style the table like shadcn/ui~
-- [x] ~make footer optional (default: hidden)~
-- [x] ~make global search optional (default: hidden)~
-- [x] ~make pagination optional (default: hidden)~
-- [x] ~add a way to add specific column filtering above the table~
-- [x] ~add a way to handle double click on a specific cell (pass row / column infos to class that uses table)~
+- [ ] clean up / beautify pagination
+- [ ] split table into parts (global filter, table, pagination) to clean up the code
+- [ ] check if there is a way to bundle the tailwind styles at a specific location to make it easier to change stuff
+- [ ] add i18n capability to keep it flexible

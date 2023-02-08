@@ -1,7 +1,8 @@
 import Head from "next/head"
 import { OnClickData, Table } from "@/components/ui/table"
-import { useMemo } from "react"
-import { ColumnDef } from "@tanstack/react-table"
+import { CSSProperties, useMemo } from "react"
+import { ColumnDef, Row, RowData } from "@tanstack/react-table"
+import { cn } from "@/lib/utils"
 
 export default function IndexPage() {
   type Item = {
@@ -14,20 +15,23 @@ export default function IndexPage() {
     () => [
       {
         header: "Name",
-        cell: (row) => row.renderValue(),
         accessorKey: "name",
       },
       {
         header: "Price",
-        cell: (row) => row.renderValue(),
+        // custom cell styling based on value
+        cell: (props) => (
+          <span
+            className={cn(
+              Number(props.getValue()) < 50 ? "text-green-500" : "text-red-500"
+            )}
+          >{`${props.getValue()} €`}</span>
+        ),
         accessorKey: "price",
       },
       {
         header: "Quantity",
-        cell: (row) => row.renderValue(),
         accessorKey: "quantity",
-        footer: "total",
-        enableColumnFilter: false,
       },
     ],
     []
@@ -39,8 +43,8 @@ export default function IndexPage() {
       items.push({
         id: i,
         name: `Super duper long item name ${i}`,
-        price: 100,
-        quantity: 1,
+        price: 10 * i,
+        quantity: 20 - i,
       })
     }
     return items
@@ -49,6 +53,15 @@ export default function IndexPage() {
   // create a handler function that processes the clicked data
   const handleDblClick = (data: OnClickData<Item>) => {
     console.log(data)
+  }
+
+  // create a function to style the whole row based on specific column data
+  const getRowStyles = (row: Row<Item>): CSSProperties => {
+    let props: CSSProperties = {}
+    if (row.original.quantity < 10) {
+      props.background = "#7F1D1D"
+    }
+    return props
   }
 
   return (
@@ -65,6 +78,8 @@ export default function IndexPage() {
           showColumnFilters
           showPagination
           handleDblClick={handleDblClick}
+          getRowStyles={getRowStyles}
+          className="h-[800px] w-[1000px] p-2"
         />
       </div>
     </div>

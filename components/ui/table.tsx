@@ -1,5 +1,6 @@
 import * as React from "react"
 
+import { RankingInfo, rankItem } from "@tanstack/match-sorter-utils"
 import {
   Column,
   Table as ReactTable,
@@ -10,13 +11,15 @@ import {
   getPaginationRowModel,
   useReactTable,
   type ColumnDef,
+  RowData,
+  Row,
+  TableMeta,
+  SortingState,
+  getSortedRowModel,
 } from "@tanstack/react-table"
 
-import { RankingInfo, rankItem } from "@tanstack/match-sorter-utils"
-
-import { cn } from "@/lib/utils"
-import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
 import {
   Select,
   SelectContent,
@@ -25,7 +28,21 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 
-interface TableProps<T extends object> {
+import { cn } from "@/lib/utils"
+import { Icons } from "../icons"
+
+declare module "@tanstack/table-core" {
+  interface TableMeta<TData extends RowData> {
+    getRowStyles?: (row: Row<TData>) => React.CSSProperties
+  }
+  interface FilterMeta {
+    itemRank: RankingInfo
+  }
+}
+
+interface TableProps<T extends object>
+  extends React.TableHTMLAttributes<HTMLTableElement>,
+    TableMeta<T> {
   data: T[]
   columns: ColumnDef<T>[]
   showFooter?: boolean
@@ -51,35 +68,43 @@ export const Table = <T extends object>({
   showPagination = false,
   stripedRows = false,
   handleDblClick = () => {},
+  getRowStyles = () => ({}),
+  className = "",
+  ...props
 }: TableProps<T>) => {
   const [globalFilter, setGlobalFilter] = React.useState("")
+  const [sorting, setSorting] = React.useState<SortingState>([])
 
   const table = useReactTable({
     data,
     columns,
     state: {
       globalFilter,
+      sorting,
     },
-    onGlobalFilterChange: setGlobalFilter,
     globalFilterFn: fuzzyFilter,
+    onGlobalFilterChange: setGlobalFilter,
+    onSortingChange: setSorting,
     getCoreRowModel: getCoreRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
+    getSortedRowModel: getSortedRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
+    meta: {
+      getRowStyles: getRowStyles,
+    },
+    debugTable: true,
   })
 
   React.useEffect(() => {
     if (!showPagination) {
-      // XXX TODO: check if there is a smoother solution
-      // XXX TODO: also change to setPageSize = rowCount
-      // XXX TODO: save rowCount to add Show All on pagination
-      table.setPageSize(1000)
+      table.setPageSize(table.getTotalSize())
     }
-  }, [])
+  })
 
   return (
-    <div>
+    <div className={cn("grid grid-rows-[auto_1fr_auto] gap-2", className)}>
       {showGlobalFilter && (
-        <div className="py-2">
+        <div>
           <Input
             value={globalFilter ?? ""}
             onChange={(event) => setGlobalFilter(event.target.value)}
@@ -89,17 +114,33 @@ export const Table = <T extends object>({
         </div>
       )}
       <div className="overflow-x-auto border border-slate-300 dark:border-slate-700 sm:rounded-md">
-        <table className="w-full text-left text-sm text-slate-900 dark:text-slate-100">
+        <table
+          className="w-full text-left text-sm text-slate-900 dark:text-slate-100"
+          {...props}
+        >
           <thead className="font bg-white text-xs font-medium uppercase dark:bg-slate-800">
             {table.getHeaderGroups().map((headerGroup) => (
               <tr key={headerGroup.id}>
                 {headerGroup.headers.map((header) => (
                   <th key={header.id} className="px-4 py-2">
-                    {!header.isPlaceholder &&
-                      flexRender(
-                        header.column.columnDef.header,
-                        header.getContext()
+                    <div
+                      className={cn(
+                        "flex items-center",
+                        header.column.getCanSort() &&
+                          "cursor-pointer select-none"
                       )}
+                      onClick={header.column.getToggleSortingHandler()}
+                    >
+                      {!header.isPlaceholder &&
+                        flexRender(
+                          header.column.columnDef.header,
+                          header.getContext()
+                        )}
+                      {{
+                        asc: <Icons.arrowUp className="inline h-4" />,
+                        desc: <Icons.arrowDown className="inline h-4" />,
+                      }[header.column.getIsSorted() as string] ?? null}
+                    </div>
                     {showColumnFilters && header.column.getCanFilter() && (
                       <div className="pt-1 font-normal">
                         <ColumnFilter column={header.column} table={table} />
@@ -114,6 +155,7 @@ export const Table = <T extends object>({
             {table.getRowModel().rows.map((row, rowIdx) => (
               <tr
                 key={row.id}
+                style={table.options.meta?.getRowStyles(row)}
                 className={cn(
                   "border-t border-slate-300 hover:bg-slate-100 dark:border-slate-700 dark:hover:bg-slate-700",
                   stripedRows &&
@@ -164,7 +206,7 @@ export const Table = <T extends object>({
         </table>
       </div>
       {showPagination && (
-        <div className="flex items-center justify-between gap-2 py-2 text-sm">
+        <div className="flex items-center justify-between gap-2 text-sm">
           <div className="flex items-center gap-2">
             <Button
               size="sm"
@@ -236,12 +278,6 @@ export const Table = <T extends object>({
       )}
     </div>
   )
-}
-
-declare module "@tanstack/table-core" {
-  interface FilterMeta {
-    itemRank: RankingInfo
-  }
 }
 
 const fuzzyFilter: FilterFn<any> = (row, columnId, value, addMeta) => {
