@@ -1,7 +1,7 @@
 import Head from "next/head"
 import { OnClickData, Table } from "@/components/ui/table"
 import { CSSProperties, useMemo } from "react"
-import { ColumnDef, Row, RowData } from "@tanstack/react-table"
+import { ColumnDef, Row } from "@tanstack/react-table"
 import { cn } from "@/lib/utils"
 
 export default function IndexPage() {

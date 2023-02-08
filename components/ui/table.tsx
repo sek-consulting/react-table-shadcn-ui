@@ -45,11 +45,11 @@ interface TableProps<T extends object>
     TableMeta<T> {
   data: T[]
   columns: ColumnDef<T>[]
+  stripedRows?: boolean
   showFooter?: boolean
   showGlobalFilter?: boolean
   showColumnFilters?: boolean
   showPagination?: boolean
-  stripedRows?: boolean
   handleDblClick?: (data: OnClickData<T>) => void
 }
 
@@ -62,11 +62,11 @@ export interface OnClickData<T extends object> {
 export const Table = <T extends object>({
   data,
   columns,
+  stripedRows = false,
   showFooter = false,
   showGlobalFilter = false,
   showColumnFilters = false,
   showPagination = false,
-  stripedRows = false,
   handleDblClick = () => {},
   getRowStyles = () => ({}),
   className = "",
