@@ -10,6 +10,7 @@
     "preview": "next build && next start"
   },
   "dependencies": {
+    "@json2csv/plainjs": "^6.1.2",
     "@next/font": "^13.1.6",
     "@radix-ui/react-select": "^1.2.0",
     "@tanstack/match-sorter-utils": "^8.7.6",

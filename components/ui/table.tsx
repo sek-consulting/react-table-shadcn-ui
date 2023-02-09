@@ -1,23 +1,26 @@
 import * as React from "react"
 
+import { Parser } from "@json2csv/plainjs"
+
 import { RankingInfo, rankItem } from "@tanstack/match-sorter-utils"
 import {
   Column,
-  Table as ReactTable,
+  type ColumnDef,
   FilterFn,
   flexRender,
   getCoreRowModel,
   getFilteredRowModel,
   getPaginationRowModel,
-  useReactTable,
-  type ColumnDef,
-  RowData,
-  Row,
-  TableMeta,
-  SortingState,
   getSortedRowModel,
+  Row,
+  RowData,
+  SortingState,
+  Table as ReactTable,
+  TableMeta,
+  useReactTable,
 } from "@tanstack/react-table"
 
+import { Icons } from "@/components/icons"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import {
@@ -28,12 +31,21 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 
-import { cn } from "@/lib/utils"
-import { Icons } from "../icons"
+import { cn, downloadFile } from "@/lib/utils"
+import { ClassValue } from "clsx"
+
+const i18n = {
+  search: "Search...",
+  min: "Min",
+  max: "Max",
+  page: "Page",
+  goToPage: "Go to page:",
+  show: "Show",
+}
 
 declare module "@tanstack/table-core" {
   interface TableMeta<TData extends RowData> {
-    getRowStyles?: (row: Row<TData>) => React.CSSProperties
+    getRowStyles?: (row: Row<TData>) => ClassValue[]
   }
   interface FilterMeta {
     itemRank: RankingInfo
@@ -50,6 +62,8 @@ interface TableProps<T extends object>
   showGlobalFilter?: boolean
   showColumnFilters?: boolean
   showPagination?: boolean
+  pageSizes?: number[]
+  allowExportCSV?: boolean
   handleDblClick?: (data: OnClickData<T>) => void
 }
 
@@ -67,8 +81,10 @@ export const Table = <T extends object>({
   showGlobalFilter = false,
   showColumnFilters = false,
   showPagination = false,
+  pageSizes = [10, 20, 30, 50],
+  allowExportCSV = false,
   handleDblClick = () => {},
-  getRowStyles = () => ({}),
+  getRowStyles = () => [],
   className = "",
   ...props
 }: TableProps<T>) => {
@@ -96,23 +112,35 @@ export const Table = <T extends object>({
   })
 
   React.useEffect(() => {
-    if (!showPagination) {
-      table.setPageSize(table.getTotalSize())
-    }
-  })
+    table.setPageSize(
+      showPagination ? pageSizes[0] ?? 10 : table.getTotalSize()
+    )
+  }, [])
 
   return (
     <div className={cn("grid grid-rows-[auto_1fr_auto] gap-2", className)}>
-      {showGlobalFilter && (
-        <div>
+      <div className="flex items-end justify-between">
+        {showGlobalFilter && (
           <Input
             value={globalFilter ?? ""}
             onChange={(event) => setGlobalFilter(event.target.value)}
             className="w-full md:max-w-xs"
-            placeholder="Search..."
+            placeholder={i18n.search}
           />
-        </div>
-      )}
+        )}
+        {allowExportCSV && (
+          <Button
+            size="sm"
+            onClick={() => {
+              exportCSV(
+                table.getFilteredRowModel().rows.map((row) => row.original as T)
+              )
+            }}
+          >
+            <Icons.download />
+          </Button>
+        )}
+      </div>
       <div className="overflow-x-auto border border-slate-300 dark:border-slate-700 sm:rounded-md">
         <table
           className="w-full text-left text-sm text-slate-900 dark:text-slate-100"
@@ -155,18 +183,18 @@ export const Table = <T extends object>({
             {table.getRowModel().rows.map((row, rowIdx) => (
               <tr
                 key={row.id}
-                style={table.options.meta?.getRowStyles(row)}
                 className={cn(
                   "border-t border-slate-300 hover:bg-slate-100 dark:border-slate-700 dark:hover:bg-slate-700",
                   stripedRows &&
                     (rowIdx % 2 == 0
                       ? "bg-slate-50 dark:bg-slate-900"
-                      : "bg-white dark:bg-slate-800")
+                      : "bg-white dark:bg-slate-800"),
+                  ...table.options.meta?.getRowStyles(row)
                 )}
               >
                 {row.getVisibleCells().map((cell, cellIdx) => (
                   <td
-                    className="px-4 py-2"
+                    className="px-3 py-1.5"
                     key={cell.id}
                     onDoubleClick={() =>
                       handleDblClick({
@@ -241,7 +269,7 @@ export const Table = <T extends object>({
               {">>"}
             </Button>
             <span className="flex items-center gap-1">
-              <div>Page</div>
+              <div>{i18n.page}</div>
               <strong>
                 {table.getState().pagination.pageIndex + 1}/
                 {table.getPageCount()}
@@ -249,7 +277,7 @@ export const Table = <T extends object>({
             </span>
           </div>
           <div className="flex items-center gap-2">
-            Go to page:
+            {i18n.goToPage}
             <Input
               defaultValue={table.getState().pagination.pageIndex + 1}
               onChange={(e) => {
@@ -259,16 +287,19 @@ export const Table = <T extends object>({
               className="h-8 w-16"
             />
             <Select
-              defaultValue="10"
-              onValueChange={(value) => table.setPageSize(Number(value))}
+              defaultValue={String(pageSizes[0])}
+              onValueChange={(value) => {
+                console.log(Number(value))
+                table.setPageSize(Number(value))
+              }}
             >
               <SelectTrigger className="h-8 w-[120px]">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                {[10, 20, 30, 40, 50].map((pageSize) => (
+                {pageSizes.map((pageSize) => (
                   <SelectItem key={pageSize} value={String(pageSize)}>
-                    Show {pageSize}
+                    {i18n.show} {pageSize}
                   </SelectItem>
                 ))}
               </SelectContent>
@@ -310,7 +341,7 @@ const ColumnFilter = ({
             old?.[1],
           ])
         }
-        placeholder={`Min`}
+        placeholder={i18n.min}
         className="h-8 w-24"
       />
       <Input
@@ -322,7 +353,7 @@ const ColumnFilter = ({
             e.target.value,
           ])
         }
-        placeholder={`Max`}
+        placeholder={i18n.max}
         className="h-8 w-24"
       />
     </div>
@@ -331,8 +362,21 @@ const ColumnFilter = ({
       type="text"
       value={(columnFilterValue ?? "") as string}
       onChange={(e) => column.setFilterValue(e.target.value)}
-      placeholder={`Search...`}
+      placeholder={i18n.search}
       className="h-8 w-36"
     />
   )
+}
+
+const exportCSV = <T extends object>(rowData: T[]) => {
+  try {
+    let csv = new Parser({ delimiter: ";" }).parse(rowData)
+    downloadFile({
+      data: csv,
+      fileName: "export.csv",
+      fileType: "text/csv",
+    })
+  } catch (err) {
+    console.log(err)
+  }
 }

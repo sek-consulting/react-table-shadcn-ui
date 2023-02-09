@@ -31,6 +31,8 @@ import { Table } from "@/components/ui/table"
 - showGlobalFilter (default: false): adds a global text-filter on top of the table
 - showColumnFilters (default: false): adds a filter to each column
 - showPagination (default: false): adds pagination to the table (page-size: 10)
+- pageSizes (default: [10,20,30,50]): let's you change the available pagesizes
+- allowExportCSV: (default: false): allows to export the filtered rows as .csv
 - handleDblClick: lets you pass in a function to handle double-clicks
 - getRowStyles: lets you pass in a function to style rows based on cell values
 
@@ -40,7 +42,4 @@ I would love to get some c&c on everything like coding style, structure and ever
 
 ## Roadmap
 
-- [ ] clean up / beautify pagination
-- [ ] split table into parts (global filter, table, pagination) to clean up the code
-- [ ] check if there is a way to bundle the tailwind styles at a specific location to make it easier to change stuff
-- [ ] add i18n capability to keep it flexible
+nothin for now but would love to add some stuff

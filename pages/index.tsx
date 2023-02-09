@@ -1,8 +1,9 @@
 import Head from "next/head"
 import { OnClickData, Table } from "@/components/ui/table"
-import { CSSProperties, useMemo } from "react"
+import { useMemo } from "react"
 import { ColumnDef, Row } from "@tanstack/react-table"
 import { cn } from "@/lib/utils"
+import { ClassValue } from "clsx"
 
 export default function IndexPage() {
   type Item = {
@@ -56,10 +57,10 @@ export default function IndexPage() {
   }
 
   // create a function to style the whole row based on specific column data
-  const getRowStyles = (row: Row<Item>): CSSProperties => {
-    let props: CSSProperties = {}
+  const getRowStyles = (row: Row<Item>): ClassValue[] => {
+    let props = []
     if (row.original.quantity < 10) {
-      props.background = "#7F1D1D"
+      props.push("bg-red-800")
     }
     return props
   }
@@ -77,6 +78,7 @@ export default function IndexPage() {
           showGlobalFilter
           showColumnFilters
           showPagination
+          allowExportCSV
           handleDblClick={handleDblClick}
           getRowStyles={getRowStyles}
           className="h-[800px] w-[1000px] p-2"

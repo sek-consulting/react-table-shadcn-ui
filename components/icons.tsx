@@ -1,6 +1,7 @@
 import {
   ArrowDown,
   ArrowUp,
+  Download,
   LucideProps,
   type Icon as LucideIcon,
 } from "lucide-react"
@@ -10,6 +11,7 @@ export type Icon = LucideIcon
 export const Icons = {
   arrowUp: ArrowUp,
   arrowDown: ArrowDown,
+  download: Download,
   gitHub: (props: LucideProps) => (
     <svg viewBox="0 0 438.549 438.549" {...props}>
       <path
