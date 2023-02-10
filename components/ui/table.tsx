@@ -53,7 +53,7 @@ declare module "@tanstack/table-core" {
 }
 
 interface TableProps<T extends object>
-  extends React.TableHTMLAttributes<HTMLTableElement>,
+  extends React.HTMLAttributes<HTMLDivElement>,
     TableMeta<T> {
   data: T[]
   columns: ColumnDef<T>[]
@@ -118,7 +118,10 @@ export const Table = <T extends object>({
   }, [])
 
   return (
-    <div className={cn("grid grid-rows-[auto_1fr_auto] gap-2", className)}>
+    <div
+      className={cn("grid grid-rows-[auto_1fr_auto] gap-2", className)}
+      {...props}
+    >
       <div className="flex items-end justify-between">
         {showGlobalFilter && (
           <Input
@@ -142,11 +145,8 @@ export const Table = <T extends object>({
         )}
       </div>
       <div className="overflow-x-auto border border-slate-300 dark:border-slate-700 sm:rounded-md">
-        <table
-          className="w-full text-left text-sm text-slate-900 dark:text-slate-100"
-          {...props}
-        >
-          <thead className="font bg-white text-xs font-medium uppercase dark:bg-slate-800">
+        <table className="w-full text-left text-sm text-slate-900 dark:text-slate-100">
+          <thead className="bg-white text-xs font-medium uppercase dark:bg-slate-800">
             {table.getHeaderGroups().map((headerGroup) => (
               <tr key={headerGroup.id}>
                 {headerGroup.headers.map((header) => (
@@ -211,7 +211,7 @@ export const Table = <T extends object>({
             ))}
           </tbody>
           {showFooter && (
-            <tfoot className="border-t border-slate-300 bg-white text-xs font-medium uppercase dark:border-slate-700  dark:text-gray-400">
+            <tfoot className="border-t border-slate-300 bg-white text-xs font-medium uppercase dark:border-slate-700 dark:bg-slate-800">
               {table.getFooterGroups().map((footerGroup) => (
                 <tr key={footerGroup.id}>
                   {footerGroup.headers.map((footer) => (
@@ -308,6 +308,31 @@ export const Table = <T extends object>({
         </div>
       )}
     </div>
+  )
+}
+
+/**
+ * exports a table with all the useful stuff already turned on
+ */
+export const FullTable = <T extends object>({
+  stripedRows = true,
+  showFooter = false,
+  showGlobalFilter = true,
+  showColumnFilters = true,
+  showPagination = true,
+  allowExportCSV = true,
+  ...props
+}: TableProps<T>) => {
+  return (
+    <Table
+      stripedRows={stripedRows}
+      showFooter={showFooter}
+      showGlobalFilter={showGlobalFilter}
+      showColumnFilters={showColumnFilters}
+      showPagination={showPagination}
+      allowExportCSV={allowExportCSV}
+      {...props}
+    />
   )
 }
 
