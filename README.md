@@ -64,7 +64,7 @@ const getRowStyles = (row: Row<Item>): ClassValue[] => {
 - pageSizes (default: [10,20,30,50]): let's you change the available pagesizes
 - allowExportCSV: (default: false): allows to export the filtered rows as .csv
 - handleDblClick: lets you pass in a function to handle double-clicks
-- handleDblClick: lets you pass in a function to handle simple clicks (could be used for updating data based on the current selection)
+- handleClick: lets you pass in a function to handle simple clicks (could be used for updating data based on the current selection)
 - getRowStyles: lets you pass in a function to style rows based on cell values
 
 ## Contribution
