@@ -64,6 +64,7 @@ interface TableProps<T extends object>
   showPagination?: boolean
   pageSizes?: number[]
   allowExportCSV?: boolean
+  handleClick?: (data: OnClickData<T>) => void
   handleDblClick?: (data: OnClickData<T>) => void
 }
 
@@ -84,6 +85,7 @@ export const Table = <T extends object>({
   pageSizes = [10, 20, 30, 50],
   allowExportCSV = false,
   handleDblClick = () => {},
+  handleClick = () => {},
   getRowStyles = () => [],
   className = "",
   ...props
@@ -203,6 +205,13 @@ export const Table = <T extends object>({
                         data: row.original,
                       })
                     }
+                    onClick={() =>
+                      handleDblClick({
+                        row: rowIdx,
+                        cell: cellIdx,
+                        data: row.original,
+                      })
+                    }
                   >
                     {flexRender(cell.column.columnDef.cell, cell.getContext())}
                   </td>
@@ -289,7 +298,6 @@ export const Table = <T extends object>({
             <Select
               defaultValue={String(pageSizes[0])}
               onValueChange={(value) => {
-                console.log(Number(value))
                 table.setPageSize(Number(value))
               }}
             >

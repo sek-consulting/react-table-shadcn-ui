@@ -18,7 +18,6 @@ import { Table } from "@/components/ui/table"
   showGlobalFilter
   showColumnFilters
   showPagination
-  handleDblClick={handleDblClick}
   getRowStyles={getRowStyles}
   className="h-[800px] w-[1000px] p-2"
 />
@@ -32,10 +31,27 @@ import { FullTable } from "@/components/ui/table"
 <FullTable
   data={dummyData()}
   columns={cols}
-  handleDblClick={handleDblClick}
   getRowStyles={getRowStyles}
   className="h-[800px] w-[1000px] p-2"
 />
+```
+
+and here is a sample implementation of getRowStyles()
+
+```typescript
+type Item = {
+  name: string
+  price: number
+  quantity: number
+}
+
+const getRowStyles = (row: Row<Item>): ClassValue[] => {
+  let props = []
+  if (row.original.quantity < 10) {
+    props.push("bg-red-800")
+  }
+  return props
+}
 ```
 
 ## Functionality
@@ -48,6 +64,7 @@ import { FullTable } from "@/components/ui/table"
 - pageSizes (default: [10,20,30,50]): let's you change the available pagesizes
 - allowExportCSV: (default: false): allows to export the filtered rows as .csv
 - handleDblClick: lets you pass in a function to handle double-clicks
+- handleDblClick: lets you pass in a function to handle simple clicks (could be used for updating data based on the current selection)
 - getRowStyles: lets you pass in a function to style rows based on cell values
 
 ## Contribution
