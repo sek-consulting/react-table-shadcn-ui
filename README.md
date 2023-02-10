@@ -56,16 +56,16 @@ const getRowStyles = (row: Row<Item>): ClassValue[] => {
 
 ## Functionality
 
-- stripedRows (default: false): alternates the row background-color
-- showFooter (default: false): shows the footer of the table
-- showGlobalFilter (default: false): adds a global text-filter on top of the table
-- showColumnFilters (default: false): adds a filter to each column
-- showPagination (default: false): adds pagination to the table (page-size: 10)
-- pageSizes (default: [10,20,30,50]): let's you change the available pagesizes
-- allowExportCSV: (default: false): allows to export the filtered rows as .csv
-- handleDblClick: lets you pass in a function to handle double-clicks
-- handleClick: lets you pass in a function to handle simple clicks (could be used for updating data based on the current selection)
-- getRowStyles: lets you pass in a function to style rows based on cell values
+- **stripedRows** (default: false): alternates the row background-color
+- **showFooter** (default: false): shows the footer of the table
+- **showGlobalFilter** (default: false): adds a global text-filter on top of the table
+- **showColumnFilters** (default: false): adds a filter to each column
+- **showPagination** (default: false): adds pagination to the table (page-size: 10)
+- **pageSizes** (default: [10,20,30,50]): let's you change the available pagesizes
+- **allowExportCSV** (default: false): allows to export the filtered rows as .csv
+- **handleDblClick**: lets you pass in a function to handle double-clicks
+- **handleClick**: lets you pass in a function to handle simple clicks (could be used for updating data based on the current selection)
+- **getRowStyles**: lets you pass in a function to style rows based on cell values
 
 ## Contribution
 
