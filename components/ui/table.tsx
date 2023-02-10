@@ -84,8 +84,8 @@ export const Table = <T extends object>({
   showPagination = false,
   pageSizes = [10, 20, 30, 50],
   allowExportCSV = false,
-  handleDblClick = () => {},
   handleClick = () => {},
+  handleDblClick = () => {},
   getRowStyles = () => [],
   className = "",
   ...props
@@ -198,14 +198,14 @@ export const Table = <T extends object>({
                   <td
                     className="px-3 py-1.5"
                     key={cell.id}
-                    onDoubleClick={() =>
-                      handleDblClick({
+                    onClick={() =>
+                      handleClick({
                         row: rowIdx,
                         cell: cellIdx,
                         data: row.original,
                       })
                     }
-                    onClick={() =>
+                    onDoubleClick={() =>
                       handleDblClick({
                         row: rowIdx,
                         cell: cellIdx,

@@ -23,7 +23,7 @@ import { Table } from "@/components/ui/table"
 />
 ```
 
-or use the FullTable component that allready takes care of most of the important settings
+or use the FullTable component that already takes care of most of the important settings
 
 ```typescript
 import { FullTable } from "@/components/ui/table"
