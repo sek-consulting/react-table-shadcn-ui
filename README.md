@@ -24,6 +24,20 @@ import { Table } from "@/components/ui/table"
 />
 ```
 
+or use the FullTable component that allready takes care of most of the important settings
+
+```typescript
+import { FullTable } from "@/components/ui/table"
+
+<FullTable
+  data={dummyData()}
+  columns={cols}
+  handleDblClick={handleDblClick}
+  getRowStyles={getRowStyles}
+  className="h-[800px] w-[1000px] p-2"
+/>
+```
+
 ## Functionality
 
 - stripedRows (default: false): alternates the row background-color
@@ -42,4 +56,4 @@ I would love to get some c&c on everything like coding style, structure and ever
 
 ## Roadmap
 
-nothin for now but would love to add some stuff
+- [ ] add a way to hide specific columns 
