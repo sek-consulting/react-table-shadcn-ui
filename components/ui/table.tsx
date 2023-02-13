@@ -54,7 +54,7 @@ declare module "@tanstack/table-core" {
 }
 
 interface TableProps<T extends object>
-  extends React.TableHTMLAttributes<HTMLTableElement>,
+  extends React.HTMLAttributes<HTMLDivElement>,
     TableMeta<T> {
   data: T[]
   columns: ColumnDef<T>[]
@@ -121,7 +121,10 @@ export const Table = <T extends object>({
   }, [])
 
   return (
-    <div className={cn("grid grid-rows-[auto_1fr_auto] gap-2", className)}>
+    <div
+      className={cn("grid grid-rows-[auto_1fr_auto] gap-2", className)}
+      {...props}
+    >
       <div className="flex items-end justify-between">
         {showGlobalFilter && (
           <Input
@@ -145,10 +148,7 @@ export const Table = <T extends object>({
         )}
       </div>
       <div className="overflow-x-auto border border-slate-300 dark:border-slate-700 sm:rounded-md">
-        <table
-          className="w-full text-left text-sm text-slate-900 dark:text-slate-100"
-          {...props}
-        >
+        <table className="w-full text-left text-sm text-slate-900 dark:text-slate-100">
           <thead className="font bg-white text-xs font-medium uppercase dark:bg-slate-800">
             {table.getHeaderGroups().map((headerGroup) => (
               <tr key={headerGroup.id}>
