@@ -187,7 +187,7 @@ export const Table = <T extends object>({
               <tr
                 key={row.id}
                 className={cn(
-                  "border-t border-slate-300 hover:bg-slate-100 dark:border-slate-700 dark:hover:bg-slate-700",
+                  "border-t border-slate-300 hover:bg-slate-200 dark:border-slate-700 dark:hover:bg-slate-700",
                   stripedRows &&
                     (rowIdx % 2 == 0
                       ? "bg-slate-50 dark:bg-slate-900"
