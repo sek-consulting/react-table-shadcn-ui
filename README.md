@@ -24,6 +24,37 @@ import { Table } from "@/components/ui/table"
 />
 ```
 
+or use the FullTable component that already takes care of most of the important settings
+
+```typescript
+import { FullTable } from "@/components/ui/table"
+
+<FullTable
+  data={dummyData()}
+  columns={cols}
+  getRowStyles={getRowStyles}
+  className="h-[800px] w-[1000px] p-2"
+/>
+```
+
+and here is a sample implementation of getRowStyles()
+
+```typescript
+type Item = {
+  name: string
+  price: number
+  quantity: number
+}
+
+const getRowStyles = (row: Row<Item>): ClassValue[] => {
+  let props = []
+  if (row.original.quantity < 10) {
+    props.push("bg-red-800 dark:bg-red-800")
+  }
+  return props
+}
+```
+
 ## Functionality
 
 - stripedRows (default: false): alternates the row background-color

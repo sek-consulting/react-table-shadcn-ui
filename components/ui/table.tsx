@@ -65,6 +65,7 @@ interface TableProps<T extends object>
   showPagination?: boolean
   pageSizes?: number[]
   allowExportCSV?: boolean
+  handleClick?: (data: OnClickData<T>) => void
   handleDblClick?: (data: OnClickData<T>) => void
 }
 
@@ -84,6 +85,7 @@ export const Table = <T extends object>({
   showPagination = false,
   pageSizes = [10, 20, 30, 50],
   allowExportCSV = false,
+  handleClick = () => {},
   handleDblClick = () => {},
   getRowStyles = () => [],
   className = "",
@@ -197,6 +199,13 @@ export const Table = <T extends object>({
                   <td
                     className="px-3 py-1.5"
                     key={cell.id}
+                    onClick={() =>
+                      handleClick({
+                        row: rowIdx,
+                        cell: cellIdx,
+                        data: row.original,
+                      })
+                    }
                     onDoubleClick={() =>
                       handleDblClick({
                         row: rowIdx,
@@ -309,6 +318,31 @@ export const Table = <T extends object>({
         </div>
       )}
     </div>
+  )
+}
+
+/**
+ * exports a table with all the useful stuff already turned on
+ */
+export const FullTable = <T extends object>({
+  stripedRows = true,
+  showFooter = false,
+  showGlobalFilter = true,
+  showColumnFilters = true,
+  showPagination = true,
+  allowExportCSV = true,
+  ...props
+}: TableProps<T>) => {
+  return (
+    <Table
+      stripedRows={stripedRows}
+      showFooter={showFooter}
+      showGlobalFilter={showGlobalFilter}
+      showColumnFilters={showColumnFilters}
+      showPagination={showPagination}
+      allowExportCSV={allowExportCSV}
+      {...props}
+    />
   )
 }
 
