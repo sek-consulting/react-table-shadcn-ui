@@ -41,6 +41,7 @@ const i18n = {
   page: "Page",
   goToPage: "Go to page:",
   show: "Show",
+  exportCSV: "Export .csv",
 }
 
 declare module "@tanstack/table-core" {
@@ -137,7 +138,7 @@ export const Table = <T extends object>({
               )
             }}
           >
-            <Icons.download />
+            <Icons.download className="mr-2 h-4 w-4" /> {i18n.exportCSV}
           </Button>
         )}
       </div>

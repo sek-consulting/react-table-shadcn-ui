@@ -60,7 +60,7 @@ export default function IndexPage() {
   const getRowStyles = (row: Row<Item>): ClassValue[] => {
     let props = []
     if (row.original.quantity < 10) {
-      props.push("bg-red-800")
+      props.push("bg-red-800 dark:bg-red-800")
     }
     return props
   }

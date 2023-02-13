@@ -2,7 +2,7 @@
 
 this little demo projects aims to provide a re-usable table component that fits the style of [shadcn/ui](https://github.com/shadcn/ui)
 
-![Darkmode Table](public/table_darkmode.jpg)
+![Darkmode Table](public/table_darkmode.png)
 
 ## Sample
 
@@ -42,4 +42,4 @@ I would love to get some c&c on everything like coding style, structure and ever
 
 ## Roadmap
 
-nothin for now but would love to add some stuff
+Nothing for now but would love to add some stuff. So let me know if you have some cool ideas. <3
