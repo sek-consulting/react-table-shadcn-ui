@@ -55,17 +55,18 @@ const getRowStyles = (row: Row<Item>): ClassValue[] => {
 }
 ```
 
-## Functionality
+## Table Functionality
 
-- stripedRows (default: false): alternates the row background-color
-- showFooter (default: false): shows the footer of the table
-- showGlobalFilter (default: false): adds a global text-filter on top of the table
-- showColumnFilters (default: false): adds a filter to each column
-- showPagination (default: false): adds pagination to the table (page-size: 10)
-- pageSizes (default: [10,20,30,50]): let's you change the available pagesizes
-- allowExportCSV: (default: false): allows to export the filtered rows as .csv
-- handleDblClick: lets you pass in a function to handle double-clicks
-- getRowStyles: lets you pass in a function to style rows based on cell values
+- **stripedRows** (default: false): alternates the row background-color
+- **showFooter** (default: false): shows the footer of the table
+- **showGlobalFilter** (default: false): adds a global text-filter on top of the table
+- **showColumnFilters** (default: false): adds a filter to each column
+- **showPagination** (default: false): adds pagination to the table (page-size: 10)
+- **pageSizes** (default: [10,20,30,50]): let's you change the available pagesizes
+- **allowExportCSV**: (default: false): allows to export the filtered rows as .csv
+- **handleClick**: lets you pass in a function to handle clicks
+- **handleDblClick**: lets you pass in a function to handle double-clicks
+- **getRowStyles**: lets you pass in a function to style rows based on cell values
 
 ## Contribution
 
@@ -73,4 +74,8 @@ I would love to get some c&c on everything like coding style, structure and ever
 
 ## Roadmap
 
-Nothing for now but would love to add some stuff. So let me know if you have some cool ideas. <3
+- [ ] vertical scrollbar should only scroll tbody. thead should stay on top
+- [ ] ability to hide specific columns (add meta info to column def) -> useful for ID columns
+- [ ] restructure readme with more infos and little how-to's for easier usage
+
+Also let me know if you have some cool ideas. <3
