@@ -34,7 +34,27 @@ import {
 import { cn, downloadFile } from "@/lib/utils"
 import { ClassValue } from "clsx"
 
-const i18n = {
+interface TableProps<T extends object>
+  extends React.HTMLAttributes<HTMLDivElement>,
+    TableMeta<T> {
+  data: T[]
+  columns: ColumnDef<T>[]
+  showFooter?: boolean
+  showGlobalFilter?: boolean
+  showColumnFilters?: boolean
+  pageSizes?: number[]
+  allowExportCSV?: boolean
+  handleClick?: (data: OnClickData<T>) => void
+  handleDblClick?: (data: OnClickData<T>) => void
+}
+
+export interface OnClickData<T extends object> {
+  row: number
+  cell: number
+  data: T
+}
+
+const STRINGS = {
   search: "Search...",
   min: "Min",
   max: "Max",
@@ -53,36 +73,12 @@ declare module "@tanstack/table-core" {
   }
 }
 
-interface TableProps<T extends object>
-  extends React.HTMLAttributes<HTMLDivElement>,
-    TableMeta<T> {
-  data: T[]
-  columns: ColumnDef<T>[]
-  stripedRows?: boolean
-  showFooter?: boolean
-  showGlobalFilter?: boolean
-  showColumnFilters?: boolean
-  showPagination?: boolean
-  pageSizes?: number[]
-  allowExportCSV?: boolean
-  handleClick?: (data: OnClickData<T>) => void
-  handleDblClick?: (data: OnClickData<T>) => void
-}
-
-export interface OnClickData<T extends object> {
-  row: number
-  cell: number
-  data: T
-}
-
 export const Table = <T extends object>({
   data,
   columns,
-  stripedRows = false,
   showFooter = false,
-  showGlobalFilter = false,
+  showGlobalFilter = true,
   showColumnFilters = false,
-  showPagination = false,
   pageSizes = [10, 20, 30, 50],
   allowExportCSV = false,
   handleClick = () => {},
@@ -114,36 +110,28 @@ export const Table = <T extends object>({
     debugTable: true,
   })
 
-  React.useEffect(() => {
-    table.setPageSize(
-      showPagination ? pageSizes[0] ?? 10 : table.getTotalSize()
-    )
-  }, [])
-
   return (
-    <div
-      className={cn("grid grid-rows-[auto_1fr_auto] gap-2", className)}
-      {...props}
-    >
+    <div className={cn("flex flex-col gap-2", className)} {...props}>
       <div className="flex items-end justify-between">
         {showGlobalFilter && (
           <Input
             value={globalFilter ?? ""}
             onChange={(event) => setGlobalFilter(event.target.value)}
             className="w-full md:max-w-xs"
-            placeholder={i18n.search}
+            placeholder={STRINGS.search}
           />
         )}
         {allowExportCSV && (
           <Button
             size="sm"
+            variant="outline"
             onClick={() => {
               exportCSV(
                 table.getFilteredRowModel().rows.map((row) => row.original as T)
               )
             }}
           >
-            <Icons.download className="mr-2 h-4 w-4" /> {i18n.exportCSV}
+            <Icons.download className="mr-2 h-4 w-4" /> {STRINGS.exportCSV}
           </Button>
         )}
       </div>
@@ -188,10 +176,9 @@ export const Table = <T extends object>({
                 key={row.id}
                 className={cn(
                   "border-t border-slate-300 hover:bg-slate-200 dark:border-slate-700 dark:hover:bg-slate-700",
-                  stripedRows &&
-                    (rowIdx % 2 == 0
-                      ? "bg-slate-50 dark:bg-slate-900"
-                      : "bg-white dark:bg-slate-800"),
+                  rowIdx % 2 == 0
+                    ? "bg-slate-50 dark:bg-slate-900"
+                    : "bg-white dark:bg-slate-800",
                   ...table.options.meta?.getRowStyles(row)
                 )}
               >
@@ -243,11 +230,12 @@ export const Table = <T extends object>({
           )}
         </table>
       </div>
-      {showPagination && (
-        <div className="flex items-center justify-between gap-2 text-sm">
-          <div className="flex items-center gap-2">
+      <div className="flex items-center justify-between gap-2 text-sm">
+        <div className="flex items-center gap-2">
+          <div>
             <Button
               size="sm"
+              variant="outline"
               onClick={() => table.setPageIndex(0)}
               disabled={!table.getCanPreviousPage()}
               className="h-8"
@@ -256,6 +244,7 @@ export const Table = <T extends object>({
             </Button>
             <Button
               size="sm"
+              variant="outline"
               onClick={() => table.previousPage()}
               disabled={!table.getCanPreviousPage()}
               className="h-8"
@@ -264,6 +253,7 @@ export const Table = <T extends object>({
             </Button>
             <Button
               size="sm"
+              variant="outline"
               onClick={() => table.nextPage()}
               disabled={!table.getCanNextPage()}
               className="h-8"
@@ -272,77 +262,52 @@ export const Table = <T extends object>({
             </Button>
             <Button
               size="sm"
+              variant="outline"
               onClick={() => table.setPageIndex(table.getPageCount() - 1)}
               disabled={!table.getCanNextPage()}
               className="h-8"
             >
               {">>"}
             </Button>
-            <span className="flex items-center gap-1">
-              <div>{i18n.page}</div>
-              <strong>
-                {table.getState().pagination.pageIndex + 1}/
-                {table.getPageCount()}
-              </strong>
-            </span>
           </div>
-          <div className="flex items-center gap-2">
-            {i18n.goToPage}
-            <Input
-              defaultValue={table.getState().pagination.pageIndex + 1}
-              onChange={(e) => {
-                const page = e.target.value ? Number(e.target.value) - 1 : 0
-                table.setPageIndex(page)
-              }}
-              className="h-8 w-16"
-            />
-            <Select
-              defaultValue={String(pageSizes[0])}
-              onValueChange={(value) => {
-                console.log(Number(value))
-                table.setPageSize(Number(value))
-              }}
-            >
-              <SelectTrigger className="h-8 w-[120px]">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                {pageSizes.map((pageSize) => (
-                  <SelectItem key={pageSize} value={String(pageSize)}>
-                    {i18n.show} {pageSize}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
+          <span className="flex items-center gap-1">
+            <div>{STRINGS.page}</div>
+            <strong>
+              {table.getState().pagination.pageIndex + 1}/{table.getPageCount()}
+            </strong>
+          </span>
         </div>
-      )}
+        <div className="flex items-center gap-2">
+          {STRINGS.goToPage}
+          <Input
+            defaultValue={table.getState().pagination.pageIndex + 1}
+            onChange={(e) => {
+              const page = e.target.value ? Number(e.target.value) - 1 : 0
+              table.setPageIndex(page)
+            }}
+            className="h-8 w-16"
+          />
+          <Select
+            defaultValue={String(pageSizes[0])}
+            onValueChange={(value) => {
+              console.log(Number(value))
+              table.setPageSize(Number(value))
+            }}
+          >
+            <SelectTrigger className="h-8 w-[120px]">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              {pageSizes.map((pageSize) => (
+                <SelectItem key={pageSize} value={String(pageSize)}>
+                  {STRINGS.show} {pageSize}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+      </div>
     </div>
-  )
-}
-
-/**
- * exports a table with all the useful stuff already turned on
- */
-export const FullTable = <T extends object>({
-  stripedRows = true,
-  showFooter = false,
-  showGlobalFilter = true,
-  showColumnFilters = true,
-  showPagination = true,
-  allowExportCSV = true,
-  ...props
-}: TableProps<T>) => {
-  return (
-    <Table
-      stripedRows={stripedRows}
-      showFooter={showFooter}
-      showGlobalFilter={showGlobalFilter}
-      showColumnFilters={showColumnFilters}
-      showPagination={showPagination}
-      allowExportCSV={allowExportCSV}
-      {...props}
-    />
   )
 }
 
@@ -376,7 +341,7 @@ const ColumnFilter = ({
             old?.[1],
           ])
         }
-        placeholder={i18n.min}
+        placeholder={STRINGS.min}
         className="h-8 w-24"
       />
       <Input
@@ -388,7 +353,7 @@ const ColumnFilter = ({
             e.target.value,
           ])
         }
-        placeholder={i18n.max}
+        placeholder={STRINGS.max}
         className="h-8 w-24"
       />
     </div>
@@ -397,7 +362,7 @@ const ColumnFilter = ({
       type="text"
       value={(columnFilterValue ?? "") as string}
       onChange={(e) => column.setFilterValue(e.target.value)}
-      placeholder={i18n.search}
+      placeholder={STRINGS.search}
       className="h-8 w-36"
     />
   )

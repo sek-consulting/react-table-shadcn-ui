@@ -2,6 +2,8 @@
 
 this little demo projects aims to provide a re-usable table component that fits the style of [shadcn/ui](https://github.com/shadcn/ui)
 
+### /!\ THIS README IS BASED ON AN OLDER VERSION OF THE TABLE AND NEEDS TO BE REDONE /!\
+
 ![Darkmode Table](public/table_darkmode.png)
 
 ## Sample

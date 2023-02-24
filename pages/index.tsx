@@ -1,5 +1,5 @@
 import Head from "next/head"
-import { FullTable, OnClickData } from "@/components/ui/table"
+import { Table, OnClickData } from "@/components/ui/table"
 import { useMemo } from "react"
 import { ColumnDef, Row } from "@tanstack/react-table"
 import { cn } from "@/lib/utils"
@@ -71,12 +71,13 @@ export default function IndexPage() {
         <title>react-table</title>
       </Head>
       <div className="flex h-screen w-screen items-center justify-center">
-        <FullTable
+        <Table
           data={dummyData()}
           columns={cols}
           handleDblClick={handleDblClick}
           getRowStyles={getRowStyles}
-          className="h-[800px] w-[1000px] p-2"
+          allowExportCSV
+          className="w-[1000px]"
         />
       </div>
     </div>
