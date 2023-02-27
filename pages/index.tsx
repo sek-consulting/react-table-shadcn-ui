@@ -4,7 +4,7 @@ import { ColumnDef, Row } from "@tanstack/react-table"
 import { ClassValue } from "clsx"
 import Head from "next/head"
 
-import { Table, OnClickData } from "@/components/ui/table"
+import { Table, OnClickData } from "@/components/table"
 import { cn } from "@/lib/utils"
 
 export default function IndexPage() {
