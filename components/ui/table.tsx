@@ -1,7 +1,5 @@
 import * as React from "react"
 
-import { Parser } from "@json2csv/plainjs"
-
 import { RankingInfo, rankItem } from "@tanstack/match-sorter-utils"
 import {
   Column,
@@ -17,8 +15,9 @@ import {
   SortingState,
   Table as ReactTable,
   TableMeta,
-  useReactTable,
+  useReactTable
 } from "@tanstack/react-table"
+import { ClassValue } from "clsx"
 
 import { Icons } from "@/components/icons"
 import { Button } from "@/components/ui/button"
@@ -28,15 +27,11 @@ import {
   SelectContent,
   SelectItem,
   SelectTrigger,
-  SelectValue,
+  SelectValue
 } from "@/components/ui/select"
+import { cn, exportToCSV } from "@/lib/utils"
 
-import { cn, downloadFile } from "@/lib/utils"
-import { ClassValue } from "clsx"
-
-interface TableProps<T extends object>
-  extends React.HTMLAttributes<HTMLDivElement>,
-    TableMeta<T> {
+interface TableProps<T extends object> extends React.HTMLAttributes<HTMLDivElement>, TableMeta<T> {
   data: T[]
   columns: ColumnDef<T>[]
   showFooter?: boolean
@@ -61,12 +56,12 @@ const STRINGS = {
   page: "Page",
   goToPage: "Go to page:",
   show: "Show",
-  exportCSV: "Export .csv",
+  exportCSV: ".csv Export"
 }
 
 declare module "@tanstack/table-core" {
   interface TableMeta<TData extends RowData> {
-    getRowStyles?: (row: Row<TData>) => ClassValue[]
+    getRowStyles: (row: Row<TData>) => ClassValue[]
   }
   interface FilterMeta {
     itemRank: RankingInfo
@@ -95,7 +90,7 @@ export const Table = <T extends object>({
     columns,
     state: {
       globalFilter,
-      sorting,
+      sorting
     },
     globalFilterFn: fuzzyFilter,
     onGlobalFilterChange: setGlobalFilter,
@@ -105,9 +100,9 @@ export const Table = <T extends object>({
     getSortedRowModel: getSortedRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
     meta: {
-      getRowStyles: getRowStyles,
+      getRowStyles: getRowStyles
     },
-    debugTable: true,
+    debugTable: true
   })
 
   return (
@@ -126,9 +121,7 @@ export const Table = <T extends object>({
             size="sm"
             variant="outline"
             onClick={() => {
-              exportCSV(
-                table.getFilteredRowModel().rows.map((row) => row.original as T)
-              )
+              exportCSV(table.getFilteredRowModel().rows.map((row) => row.original as T))
             }}
           >
             <Icons.download className="mr-2 h-4 w-4" /> {STRINGS.exportCSV}
@@ -145,19 +138,15 @@ export const Table = <T extends object>({
                     <div
                       className={cn(
                         "flex items-center",
-                        header.column.getCanSort() &&
-                          "cursor-pointer select-none"
+                        header.column.getCanSort() && "cursor-pointer select-none"
                       )}
                       onClick={header.column.getToggleSortingHandler()}
                     >
                       {!header.isPlaceholder &&
-                        flexRender(
-                          header.column.columnDef.header,
-                          header.getContext()
-                        )}
+                        flexRender(header.column.columnDef.header, header.getContext())}
                       {{
                         asc: <Icons.arrowUp className="inline h-4" />,
-                        desc: <Icons.arrowDown className="inline h-4" />,
+                        desc: <Icons.arrowDown className="inline h-4" />
                       }[header.column.getIsSorted() as string] ?? null}
                     </div>
                     {showColumnFilters && header.column.getCanFilter() && (
@@ -176,10 +165,8 @@ export const Table = <T extends object>({
                 key={row.id}
                 className={cn(
                   "border-t border-slate-300 hover:bg-slate-200 dark:border-slate-700 dark:hover:bg-slate-700",
-                  rowIdx % 2 == 0
-                    ? "bg-slate-50 dark:bg-slate-900"
-                    : "bg-white dark:bg-slate-800",
-                  ...table.options.meta?.getRowStyles(row)
+                  rowIdx % 2 == 0 ? "bg-slate-50 dark:bg-slate-900" : "bg-white dark:bg-slate-800",
+                  table.options.meta?.getRowStyles(row)
                 )}
               >
                 {row.getVisibleCells().map((cell, cellIdx) => (
@@ -190,14 +177,14 @@ export const Table = <T extends object>({
                       handleClick({
                         row: rowIdx,
                         cell: cellIdx,
-                        data: row.original,
+                        data: row.original
                       })
                     }
                     onDoubleClick={() =>
                       handleDblClick({
                         row: rowIdx,
                         cell: cellIdx,
-                        data: row.original,
+                        data: row.original
                       })
                     }
                   >
@@ -212,16 +199,9 @@ export const Table = <T extends object>({
               {table.getFooterGroups().map((footerGroup) => (
                 <tr key={footerGroup.id}>
                   {footerGroup.headers.map((footer) => (
-                    <th
-                      className="px-4 py-2"
-                      key={footer.id}
-                      colSpan={footer.colSpan}
-                    >
+                    <th className="px-4 py-2" key={footer.id} colSpan={footer.colSpan}>
                       {!footer.isPlaceholder &&
-                        flexRender(
-                          footer.column.columnDef.footer,
-                          footer.getContext()
-                        )}
+                        flexRender(footer.column.columnDef.footer, footer.getContext())}
                     </th>
                   ))}
                 </tr>
@@ -238,36 +218,36 @@ export const Table = <T extends object>({
               variant="outline"
               onClick={() => table.setPageIndex(0)}
               disabled={!table.getCanPreviousPage()}
-              className="h-8"
+              className="h-8 rounded-r-none"
             >
-              {"<<"}
+              <Icons.first className="h-4 w-4" />
             </Button>
             <Button
               size="sm"
               variant="outline"
               onClick={() => table.previousPage()}
               disabled={!table.getCanPreviousPage()}
-              className="h-8"
+              className="h-8 rounded-none"
             >
-              {"<"}
+              <Icons.back className="h-4 w-4" />
             </Button>
             <Button
               size="sm"
               variant="outline"
               onClick={() => table.nextPage()}
               disabled={!table.getCanNextPage()}
-              className="h-8"
+              className="h-8 rounded-none"
             >
-              {">"}
+              <Icons.next className="h-4 w-4" />
             </Button>
             <Button
               size="sm"
               variant="outline"
               onClick={() => table.setPageIndex(table.getPageCount() - 1)}
               disabled={!table.getCanNextPage()}
-              className="h-8"
+              className="h-8 rounded-l-none"
             >
-              {">>"}
+              <Icons.last className="h-4 w-4" />
             </Button>
           </div>
           <span className="flex items-center gap-1">
@@ -317,16 +297,8 @@ const fuzzyFilter: FilterFn<any> = (row, columnId, value, addMeta) => {
   return itemRank.passed
 }
 
-const ColumnFilter = ({
-  column,
-  table,
-}: {
-  column: Column<any, any>
-  table: ReactTable<any>
-}) => {
-  const firstValue = table
-    .getPreFilteredRowModel()
-    .flatRows[0]?.getValue(column.id)
+const ColumnFilter = ({ column, table }: { column: Column<any, any>; table: ReactTable<any> }) => {
+  const firstValue = table.getPreFilteredRowModel().flatRows[0]?.getValue(column.id)
 
   const columnFilterValue = column.getFilterValue()
 
@@ -336,10 +308,7 @@ const ColumnFilter = ({
         type="number"
         value={(columnFilterValue as [number, number])?.[0] ?? ""}
         onChange={(e) =>
-          column.setFilterValue((old: [number, number]) => [
-            e.target.value,
-            old?.[1],
-          ])
+          column.setFilterValue((old: [number, number]) => [e.target.value, old?.[1]])
         }
         placeholder={STRINGS.min}
         className="h-8 w-24"
@@ -348,10 +317,7 @@ const ColumnFilter = ({
         type="number"
         value={(columnFilterValue as [number, number])?.[1] ?? ""}
         onChange={(e) =>
-          column.setFilterValue((old: [number, number]) => [
-            old?.[0],
-            e.target.value,
-          ])
+          column.setFilterValue((old: [number, number]) => [old?.[0], e.target.value])
         }
         placeholder={STRINGS.max}
         className="h-8 w-24"
@@ -370,12 +336,7 @@ const ColumnFilter = ({
 
 const exportCSV = <T extends object>(rowData: T[]) => {
   try {
-    let csv = new Parser({ delimiter: ";" }).parse(rowData)
-    downloadFile({
-      data: csv,
-      fileName: "export.csv",
-      fileType: "text/csv",
-    })
+    exportToCSV({ rows: rowData })
   } catch (err) {
     console.log(err)
   }

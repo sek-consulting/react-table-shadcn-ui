@@ -1,6 +1,7 @@
 "use client"
 
 import * as React from "react"
+
 import * as SelectPrimitive from "@radix-ui/react-select"
 import { Check, ChevronDown } from "lucide-react"
 
@@ -43,9 +44,7 @@ const SelectContent = React.forwardRef<
       )}
       {...props}
     >
-      <SelectPrimitive.Viewport className="p-1">
-        {children}
-      </SelectPrimitive.Viewport>
+      <SelectPrimitive.Viewport className="p-1">{children}</SelectPrimitive.Viewport>
     </SelectPrimitive.Content>
   </SelectPrimitive.Portal>
 ))
@@ -109,5 +108,5 @@ export {
   SelectContent,
   SelectLabel,
   SelectItem,
-  SelectSeparator,
+  SelectSeparator
 }

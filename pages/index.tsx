@@ -1,9 +1,11 @@
-import Head from "next/head"
-import { Table, OnClickData } from "@/components/ui/table"
 import { useMemo } from "react"
+
 import { ColumnDef, Row } from "@tanstack/react-table"
-import { cn } from "@/lib/utils"
 import { ClassValue } from "clsx"
+import Head from "next/head"
+
+import { Table, OnClickData } from "@/components/ui/table"
+import { cn } from "@/lib/utils"
 
 export default function IndexPage() {
   type Item = {
@@ -16,24 +18,22 @@ export default function IndexPage() {
     () => [
       {
         header: "Name",
-        accessorKey: "name",
+        accessorKey: "name"
       },
       {
         header: "Price",
         // custom cell styling based on value
         cell: (props) => (
           <span
-            className={cn(
-              Number(props.getValue()) < 50 ? "text-green-500" : "text-red-500"
-            )}
+            className={cn(Number(props.getValue()) < 50 ? "text-green-500" : "text-red-500")}
           >{`${props.getValue()} €`}</span>
         ),
-        accessorKey: "price",
+        accessorKey: "price"
       },
       {
         header: "Quantity",
-        accessorKey: "quantity",
-      },
+        accessorKey: "quantity"
+      }
     ],
     []
   )
@@ -45,7 +45,7 @@ export default function IndexPage() {
         id: i,
         name: `Super duper long item name ${i}`,
         price: 10 * i,
-        quantity: 20 - i,
+        quantity: 20 - i
       })
     }
     return items
@@ -74,6 +74,7 @@ export default function IndexPage() {
         <Table
           data={dummyData()}
           columns={cols}
+          showColumnFilters
           handleDblClick={handleDblClick}
           getRowStyles={getRowStyles}
           allowExportCSV
