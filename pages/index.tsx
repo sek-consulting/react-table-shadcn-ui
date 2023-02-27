@@ -1,4 +1,4 @@
-import { useMemo } from "react"
+import * as React from "react"
 
 import { ColumnDef, Row } from "@tanstack/react-table"
 import { ClassValue } from "clsx"
@@ -14,7 +14,7 @@ export default function IndexPage() {
     quantity: number
   }
 
-  const cols = useMemo<ColumnDef<Item>[]>(
+  const cols = React.useMemo<ColumnDef<Item>[]>(
     () => [
       {
         header: "Name",
@@ -50,6 +50,7 @@ export default function IndexPage() {
     }
     return items
   }
+  const [data, setData] = React.useState(() => [...dummyData()])
 
   // create a handler function that processes the clicked data
   const handleDblClick = (data: OnClickData<Item>) => {
@@ -72,7 +73,7 @@ export default function IndexPage() {
       </Head>
       <div className="flex h-screen w-screen items-center justify-center">
         <Table
-          data={dummyData()}
+          data={data}
           columns={cols}
           showColumnFilters
           handleDblClick={handleDblClick}
